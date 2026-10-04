@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter, Roboto } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Header } from "@/components/layout/Header";
+import ReduxProvider from "@/lib/providers/ReduxProvider";
+import { ThemeProvider } from "@/lib/providers/ThemeProvider";
 
 const robotoHeading = Roboto({subsets:['latin'],variable:'--font-heading'});
 
@@ -16,9 +19,21 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", "font-sans", inter.variable, robotoHeading.variable)}
+		  className={cn("h-full", "dark", "antialiased", "font-sans", "bg-white", "dark:bg-gray-950", "text-black", "dark:text-white", inter.variable, robotoHeading.variable)}
+				suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+		  <body className="container mx-auto min-h-full flex flex-col">
+
+			  <ThemeProvider
+			attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+			  >
+				<Header />
+            {children}
+          </ThemeProvider>
+		  </body>
     </html>
   );
 }
