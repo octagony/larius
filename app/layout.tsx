@@ -6,9 +6,12 @@ import { Header } from "@/components/layout/Header";
 import ReduxProvider from "@/lib/providers/ReduxProvider";
 import { ThemeProvider } from "@/lib/providers/ThemeProvider";
 
-const robotoHeading = Roboto({subsets:['latin'],variable:'--font-heading'});
+const robotoHeading = Roboto({
+  subsets: ["latin"],
+  variable: "--font-heading",
+});
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,21 +22,31 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-		  className={cn("h-full", "dark", "antialiased", "font-sans", "bg-white", "dark:bg-gray-950", "text-black", "dark:text-white", inter.variable, robotoHeading.variable)}
-				suppressHydrationWarning
+      className={cn(
+        "h-full",
+        "dark",
+        "antialiased",
+        "font-sans",
+        "bg-white",
+        "dark:bg-gray-950",
+        "text-black",
+        "dark:text-white",
+        inter.variable,
+        robotoHeading.variable,
+      )}
+      suppressHydrationWarning
     >
-		  <body className="container mx-auto min-h-full flex flex-col">
-
-			  <ThemeProvider
-			attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-			  >
-				<Header />
-            {children}
-          </ThemeProvider>
-		  </body>
+      <body className="container mx-auto min-h-full flex flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header />
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
