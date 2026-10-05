@@ -4,6 +4,8 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/lib/providers/ThemeProvider';
 import Header from '@/components/layout/Header';
+import ReduxProvider from '@/lib/providers/ReduxProvider';
+import Spinner from '@/components/Spinner';
 
 const robotoHeading = Roboto({
   subsets: ['latin'],
@@ -32,10 +34,13 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       suppressHydrationWarning
     >
       <body className="mx-auto min-h-full flex flex-col">
-        <ThemeProvider>
-          <Header />
-          {children}
-        </ThemeProvider>
+        <ReduxProvider>
+          <ThemeProvider>
+            <Header />
+            {children}
+            <Spinner />
+          </ThemeProvider>
+        </ReduxProvider>
       </body>
     </html>
   );
