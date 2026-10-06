@@ -18,12 +18,17 @@ export default function Header() {
 
   return (
     <header className="fixed h-16 z-10 w-full bg-white drop-shadow-sm dark:bg-black px-2 py-4 ">
-      <div className="flex justify-between max-w-3xl mx-auto">
+      <div className="flex justify-between max-w-7xl mx-auto">
         <Logo />
 
-        <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-          {theme === 'dark' ? <Moon className="size-6" /> : <Sun className="size-6" />}
-        </button>
+        <div className="flex">
+          <button
+            className="hover:scale-110 hover:cursor-pointer transition-all"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          >
+            {theme === 'dark' ? <Moon className="size-6" /> : <Sun className="size-6" />}
+          </button>
+        </div>
       </div>
     </header>
   );

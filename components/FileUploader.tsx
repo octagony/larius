@@ -51,9 +51,6 @@ export function FileUploader() {
     maxFiles: 1,
     multiple: false,
     disabled: isScanning,
-    accept: {
-      '*/*': [],
-    },
   });
 
   const startScan = async (file: File) => {
