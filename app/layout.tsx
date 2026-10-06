@@ -38,7 +38,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <ReduxProvider>
           <ThemeProvider>
             <Header />
-            {children}
+            <main className="h-dvh w-dvw">{children}</main>
             <Spinner />
             <Toaster />
           </ThemeProvider>

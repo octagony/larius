@@ -1,3 +1,4 @@
+import { MAX_FILE_SIZE } from '@/lib/constants';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
@@ -9,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File is not provided' }, { status: 400 });
     }
 
-    if (file.size > 32 * 1024 * 1024) {
+    if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json({ error: 'File exceeds the 32 MB limit' }, { status: 400 });
     }
 
