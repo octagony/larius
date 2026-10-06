@@ -1,6 +1,5 @@
 'use client';
 import { Field, FieldLabel } from '@/components/ui/field';
-import { useState } from 'react';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { CircleX } from 'lucide-react';
 import { ITextInputProps } from '@/lib/interfaces/components/ITextInput.interface';

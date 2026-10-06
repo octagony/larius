@@ -5,7 +5,9 @@ import { StatBlock } from '@/components/StatBlock';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { usePoolAnalytics } from '@/hooks/usePoolAnalytics';
 import { processUrl, setToast } from '@/lib/helpers';
+import { IScanResult } from '@/lib/interfaces/components/IFileUploader.interface';
 import { hideLoader, showLoader } from '@/lib/state/features/loaderSlice';
 import { setPoolingMessage } from '@/lib/state/features/poolingMessageSlice';
 import { cn } from 'cn';
@@ -14,8 +16,9 @@ import { useDispatch } from 'react-redux';
 
 export default function UrlScanPage() {
   const dispatch = useDispatch();
+  const { pollAnalysisResults } = usePoolAnalytics();
   const [text, setText] = useState('');
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<IScanResult | null>(null);
 
   const handleUrlSubmit = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -39,53 +42,16 @@ export default function UrlScanPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Ошибка отправки URL');
+      if (!res.ok) {
+        throw new Error(data.error || 'Ошибка отправки URL');
+      }
 
-      await pollAnalysisResults(data.analysisId, urlForScan);
+      const result = await pollAnalysisResults(data.analysisId, urlForScan);
+      setResult(result);
     } catch (err: any) {
       setToast('error', err.message, 'high');
     } finally {
       dispatch(hideLoader());
-    }
-  };
-
-  const pollAnalysisResults = async (analysisId: string, url: string) => {
-    const maxAttempts = 40;
-    let attempts = 0;
-    let interval = 2000;
-
-    while (attempts < maxAttempts) {
-      const timeLeft = (((maxAttempts - attempts) * interval) / 1000).toFixed(0);
-      dispatch(setPoolingMessage(`Analysis ${url}... (remaining ~${timeLeft} sec)`));
-
-      try {
-        const res = await fetch(`/api/status?analysisId=${analysisId}`);
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Error getting the status');
-        }
-
-        if (data.status === 'completed') {
-          setResult(data);
-          dispatch(setPoolingMessage(''));
-          return;
-        }
-
-        if (data.status === 'failed') {
-          throw new Error('The analysis failed');
-        }
-
-        attempts++;
-        if (attempts >= maxAttempts) {
-          throw new Error('The waiting time for analysis has been exceeded. Try again later.');
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, Math.min(interval * 1.5, 8000)));
-      } catch (err: any) {
-        setToast('error', err.message, 'high');
-        return;
-      }
     }
   };
 

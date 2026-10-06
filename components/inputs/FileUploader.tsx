@@ -4,10 +4,8 @@ import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useAppDispatch } from '@/lib/state/hooks';
 import { showLoader, hideLoader } from '@/lib/state/features/loaderSlice';
-import { toast } from '@/components/ui/toast';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { IScanResult } from '@/lib/interfaces/components/IFileUploader.interface';
-import { setPoolingMessage } from '@/lib/state/features/poolingMessageSlice';
 import { StatBlock } from '@/components/StatBlock';
 import { Card } from '@/components/ui/card';
 import { CircleCheck, CircleX, TriangleAlert, Upload } from 'lucide-react';
@@ -21,9 +19,11 @@ import {
   SUSPICIOUS_FILE_TITLE,
 } from '@/lib/constants';
 import { setToast } from '@/lib/helpers';
+import { usePoolAnalytics } from '@/hooks/usePoolAnalytics';
 
 export function FileUploader() {
   const dispatch = useAppDispatch();
+  const { pollAnalysisResults } = usePoolAnalytics();
   const [result, setResult] = useState<IScanResult | null>(null);
   const [isScanning, setIsScanning] = useState(false);
 
@@ -69,53 +69,13 @@ export function FileUploader() {
         throw new Error(uploadData.error || 'Upload error');
       }
 
-      await pollAnalysisResults(uploadData.analysisId, file.name);
+      const result = await pollAnalysisResults(uploadData.analysisId, file.name);
+      setResult(result);
     } catch (err: any) {
       setToast('error', err.message, 'high');
     } finally {
       dispatch(hideLoader());
       setIsScanning(false);
-    }
-  };
-
-  const pollAnalysisResults = async (analysisId: string, fileName: string): Promise<void> => {
-    const maxAttempts = 20;
-    let attempts = 0;
-    let interval = 2000;
-
-    while (attempts < maxAttempts) {
-      const timeLeft = (((maxAttempts - attempts) * interval) / 1000).toFixed(0);
-      dispatch(setPoolingMessage(`Analysis ${fileName}... (remaining ~${timeLeft} sec)`));
-
-      try {
-        const res = await fetch(`/api/status?analysisId=${analysisId}`);
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Error getting the status');
-        }
-
-        if (data.status === 'completed') {
-          setResult(data);
-          dispatch(setPoolingMessage(''));
-          return;
-        }
-
-        if (data.status === 'failed') {
-          throw new Error('The analysis failed');
-        }
-
-        attempts++;
-        if (attempts >= maxAttempts) {
-          throw new Error('The waiting time for analysis has been exceeded. Try again later.');
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, Math.min(interval * 1.5, 8000)));
-      } catch (err: any) {
-        setToast('error', err.message, 'high');
-        dispatch(setPoolingMessage(''));
-        return;
-      }
     }
   };
 
