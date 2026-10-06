@@ -1,13 +1,11 @@
 'use client';
 
-import { Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Logo } from '@/components/Logo';
+import { Logo } from '@/components/layout/Logo';
+import { Navigation } from './Navigation';
+import { ThemeToggler } from './ThemeToggler';
 
 export default function Header() {
-  const { theme, setTheme } = useTheme();
-
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -21,13 +19,9 @@ export default function Header() {
       <div className="flex justify-between max-w-7xl mx-auto">
         <Logo />
 
-        <div className="flex">
-          <button
-            className="hover:scale-110 hover:cursor-pointer transition-all"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          >
-            {theme === 'dark' ? <Moon className="size-6" /> : <Sun className="size-6" />}
-          </button>
+        <div className="flex items-center gap-4">
+          <Navigation />
+          <ThemeToggler />
         </div>
       </div>
     </header>
