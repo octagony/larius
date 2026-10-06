@@ -1,11 +1,8 @@
 'use client';
 
+import { ILoaderState } from '@/lib/interfaces/state/ILoaderState';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-
-interface ILoaderState {
-  isLoading: boolean;
-}
 
 const initialState: ILoaderState = {
   isLoading: false,

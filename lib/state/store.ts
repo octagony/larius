@@ -1,11 +1,13 @@
 'use client';
 import { configureStore } from '@reduxjs/toolkit';
 import loaderReducer from './features/loaderSlice';
+import poolingMessageReducer from './features/poolingMessageSlice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       loader: loaderReducer,
+      poolingMessage: poolingMessageReducer,
     },
   });
 };
