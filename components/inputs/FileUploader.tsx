@@ -5,8 +5,8 @@ import { useDropzone } from 'react-dropzone';
 import { useAppDispatch } from '@/lib/state/hooks';
 import { showLoader, hideLoader } from '@/lib/state/features/loaderSlice';
 import { toast } from '@/components/ui/toast';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from './ui/table';
-import { IScanResult } from '@/lib/interfaces/components/IFileUploader';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { IScanResult } from '@/lib/interfaces/components/IFileUploader.interface';
 import { setPoolingMessage } from '@/lib/state/features/poolingMessageSlice';
 import { StatBlock } from '@/components/StatBlock';
 import { Card } from '@/components/ui/card';
@@ -20,6 +20,7 @@ import {
   SUSPICIOUS_FILE_CATEGORY,
   SUSPICIOUS_FILE_TITLE,
 } from '@/lib/constants';
+import { setToast } from '@/lib/helpers';
 
 export function FileUploader() {
   const dispatch = useAppDispatch();
@@ -34,11 +35,7 @@ export function FileUploader() {
     const file = acceptedFiles[0];
 
     if (file.size > MAX_FILE_SIZE) {
-      toast.add({
-        type: 'error',
-        title: `File "${file.name}" exceeds 32 MB limit`,
-        priority: 'high',
-      });
+      setToast('error', `File "${file.name}" exceeds 32 MB limit`, 'high');
       return;
     }
 
@@ -61,7 +58,7 @@ export function FileUploader() {
       const clientFormData = new FormData();
       clientFormData.append('file', file);
 
-      const uploadRes = await fetch('/api/vt/upload', {
+      const uploadRes = await fetch('/api/file/upload', {
         method: 'POST',
         body: clientFormData,
       });
@@ -74,11 +71,7 @@ export function FileUploader() {
 
       await pollAnalysisResults(uploadData.analysisId, file.name);
     } catch (err: any) {
-      toast.add({
-        type: 'error',
-        title: err.message,
-        priority: 'high',
-      });
+      setToast('error', err.message, 'high');
     } finally {
       dispatch(hideLoader());
       setIsScanning(false);
@@ -95,7 +88,7 @@ export function FileUploader() {
       dispatch(setPoolingMessage(`Analysis ${fileName}... (remaining ~${timeLeft} sec)`));
 
       try {
-        const res = await fetch(`/api/vt/status?analysisId=${analysisId}`);
+        const res = await fetch(`/api/file/status?analysisId=${analysisId}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -119,11 +112,7 @@ export function FileUploader() {
 
         await new Promise((resolve) => setTimeout(resolve, Math.min(interval * 1.5, 8000)));
       } catch (err: any) {
-        toast.add({
-          type: 'error',
-          title: err.message,
-          priority: 'high',
-        });
+        setToast('error', err.message, 'high');
         dispatch(setPoolingMessage(''));
         return;
       }

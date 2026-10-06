@@ -26,7 +26,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (!vtResponse.ok) {
-      const errorData = await vtResponse.json().catch(() => ({}));
+      const errorData = await vtResponse.json().catch(() => {
+        throw new Error('Error while catching JSON');
+      });
       throw new Error(errorData.error?.message || 'Error uploading to VirusTotal');
     }
 
