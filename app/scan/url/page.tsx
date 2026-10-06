@@ -59,7 +59,7 @@ export default function UrlScanPage() {
       dispatch(setPoolingMessage(`Analysis ${url}... (remaining ~${timeLeft} sec)`));
 
       try {
-        const res = await fetch(`/api/file/status?analysisId=${analysisId}`);
+        const res = await fetch(`/api/status?analysisId=${analysisId}`);
         const data = await res.json();
 
         if (!res.ok) {

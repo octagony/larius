@@ -58,7 +58,7 @@ export function FileUploader() {
       const clientFormData = new FormData();
       clientFormData.append('file', file);
 
-      const uploadRes = await fetch('/api/file/upload', {
+      const uploadRes = await fetch('/api/file', {
         method: 'POST',
         body: clientFormData,
       });
@@ -88,7 +88,7 @@ export function FileUploader() {
       dispatch(setPoolingMessage(`Analysis ${fileName}... (remaining ~${timeLeft} sec)`));
 
       try {
-        const res = await fetch(`/api/file/status?analysisId=${analysisId}`);
+        const res = await fetch(`/api/status?analysisId=${analysisId}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -188,11 +188,21 @@ export function FileUploader() {
                       <TableHead
                         className={`${data.category === MALICIOS_FILE_CATEGORY ? 'text-red-600' : data.category === SUSPICIOUS_FILE_CATEGORY ? 'text-yellow-600' : 'text-green-600'}`}
                       >
-                        {data.category === MALICIOS_FILE_CATEGORY
-                          ? `${(<CircleX />)} ${MALICIOUS_FILE_TITLE}`
-                          : data.category === SUSPICIOUS_FILE_CATEGORY
-                            ? `${(<TriangleAlert />)} ${SUSPICIOUS_FILE_TITLE}`
-                            : `${(<CircleCheck />)} ${SAFE_FILE_TITLE}`}
+                        <span className="flex items-center gap-2">
+                          {data.category === MALICIOS_FILE_CATEGORY ? (
+                            <>
+                              <CircleX size={16} /> {MALICIOUS_FILE_TITLE}
+                            </>
+                          ) : data.category === SUSPICIOUS_FILE_CATEGORY ? (
+                            <>
+                              <TriangleAlert size={16} /> {SUSPICIOUS_FILE_TITLE}
+                            </>
+                          ) : (
+                            <>
+                              <CircleCheck size={16} /> {SAFE_FILE_TITLE}
+                            </>
+                          )}
+                        </span>
                       </TableHead>
                     </TableRow>
                   ))}
