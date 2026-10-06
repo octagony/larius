@@ -1,83 +1,37 @@
 'use client';
 
-import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useAppDispatch } from '@/lib/state/hooks';
-import { showLoader, hideLoader } from '@/lib/state/features/loaderSlice';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { IScanResult } from '@/lib/interfaces/components/IFileUploader.interface';
-import { StatBlock } from '@/components/StatBlock';
+import { IFileUploaderProps } from '@/lib/interfaces/components/IFileUploader.interface';
 import { Card } from '@/components/ui/card';
-import { CircleCheck, CircleX, TriangleAlert, Upload } from 'lucide-react';
-import {
-  MALICIOS_FILE_CATEGORY,
-  MALICIOUS_FILE_TITLE,
-  MAX_FILE_SIZE,
-  NOT_DETECTED_FILE_TITLE,
-  SAFE_FILE_TITLE,
-  SUSPICIOUS_FILE_CATEGORY,
-  SUSPICIOUS_FILE_TITLE,
-} from '@/lib/constants';
+import { Upload } from 'lucide-react';
+import { MAX_FILE_SIZE } from '@/lib/constants';
 import { setToast } from '@/lib/helpers';
-import { usePoolAnalytics } from '@/hooks/usePoolAnalytics';
+import { useMemo } from 'react';
 
-export function FileUploader() {
-  const dispatch = useAppDispatch();
-  const { pollAnalysisResults } = usePoolAnalytics();
-  const [result, setResult] = useState<IScanResult | null>(null);
-  const [isScanning, setIsScanning] = useState(false);
+export function FileUploader({ onFileSelect, children }: IFileUploaderProps) {
+  const onDrop = useMemo(
+    () => (acceptedFiles: File[]) => {
+      if (acceptedFiles.length === 0) {
+        return;
+      }
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) {
-      return;
-    }
+      const file = acceptedFiles[0];
 
-    const file = acceptedFiles[0];
+      if (file.size > MAX_FILE_SIZE) {
+        setToast('error', `File "${file.name}" exceeds 32 MB limit`, 'high');
+        return;
+      }
 
-    if (file.size > MAX_FILE_SIZE) {
-      setToast('error', `File "${file.name}" exceeds 32 MB limit`, 'high');
-      return;
-    }
-
-    setResult(null);
-    startScan(file);
-  }, []);
+      onFileSelect(file);
+    },
+    [onFileSelect]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     maxFiles: 1,
     multiple: false,
-    disabled: isScanning,
   });
-
-  const startScan = async (file: File) => {
-    setIsScanning(true);
-    dispatch(showLoader());
-
-    try {
-      const clientFormData = new FormData();
-      clientFormData.append('file', file);
-
-      const uploadRes = await fetch('/api/file', {
-        method: 'POST',
-        body: clientFormData,
-      });
-
-      const uploadData = await uploadRes.json();
-
-      if (!uploadRes.ok) {
-        throw new Error(uploadData.error || 'Upload error');
-      }
-
-      const result = await pollAnalysisResults(uploadData.analysisId, file.name);
-      setResult(result);
-    } catch (err: any) {
-      setToast('error', err.message, 'high');
-    } finally {
-      dispatch(hideLoader());
-      setIsScanning(false);
-    }
-  };
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-4">
@@ -85,7 +39,6 @@ export function FileUploader() {
         {...getRootProps()}
         className={`relative flex flex-col items-center justify-center p-10 transition-all cursor-pointer
           ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-muted-foreground/50'}
-          ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}
         `}
       >
         <input {...getInputProps()} />
@@ -104,74 +57,6 @@ export function FileUploader() {
           </div>
         </div>
       </Card>
-
-      {result && result.stats && (
-        <div className="p-6 dark:bg-black bg-white border rounded-lg shadow-sm space-y-4">
-          <h2 className="text-xl font-bold text-zinc-950 dark:text-white">Scan Report</h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <StatBlock
-              label={MALICIOUS_FILE_TITLE}
-              value={result.stats.malicious || 0}
-              color="bg-red-100 text-red-700 border-red-200"
-            />
-            <StatBlock
-              label={SUSPICIOUS_FILE_TITLE}
-              value={result.stats.suspicious || 0}
-              color="bg-yellow-100 text-yellow-700 border-yellow-200"
-            />
-            <StatBlock
-              label={SAFE_FILE_TITLE}
-              value={result.stats.harmless || 0}
-              color="bg-green-100 text-green-700 border-green-200"
-            />
-            <StatBlock
-              label={NOT_DETECTED_FILE_TITLE}
-              value={result.stats.undetected || 0}
-              color="bg-gray-100 text-gray-700 border-gray-200"
-            />
-          </div>
-
-          <div className="pt-4 border-t">
-            <div className="max-h-80 overflow-y-auto text-sm">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Antivirus</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Object.entries(result.results).map(([engine, data]: [string, any]) => (
-                    <TableRow key={engine}>
-                      <TableHead>{engine}</TableHead>
-                      <TableHead
-                        className={`${data.category === MALICIOS_FILE_CATEGORY ? 'text-red-600' : data.category === SUSPICIOUS_FILE_CATEGORY ? 'text-yellow-600' : 'text-green-600'}`}
-                      >
-                        <span className="flex items-center gap-2">
-                          {data.category === MALICIOS_FILE_CATEGORY ? (
-                            <>
-                              <CircleX size={16} /> {MALICIOUS_FILE_TITLE}
-                            </>
-                          ) : data.category === SUSPICIOUS_FILE_CATEGORY ? (
-                            <>
-                              <TriangleAlert size={16} /> {SUSPICIOUS_FILE_TITLE}
-                            </>
-                          ) : (
-                            <>
-                              <CircleCheck size={16} /> {SAFE_FILE_TITLE}
-                            </>
-                          )}
-                        </span>
-                      </TableHead>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
