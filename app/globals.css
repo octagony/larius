@@ -46,6 +46,8 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --background-image-gradient-bg: var(--background-gradient);
 }
 
 :root {
@@ -81,6 +83,15 @@
   --sidebar-ring: oklch(0.705 0.015 286.067);
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
+
+  --background-gradient: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #e5e5e5 25%,
+    #ebebf2 50%,
+    #e5e5e5 75%,
+    #ffffff 100%
+  );
 }
 
 .dark {
@@ -115,15 +126,30 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
+
+  --background-gradient: linear-gradient(
+    135deg,
+    #000000 0%,
+    #09090b 25%,
+    #18181b 50%,
+    #09090b 75%,
+    #000000 100%
+  );
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+    background-image: var(--background-gradient);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+    min-height: 100vh;
   }
+
   html {
     @apply font-sans;
   }
@@ -135,3 +161,15 @@
 }
 
 @variant dark (&:where(.dark, .dark *));
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

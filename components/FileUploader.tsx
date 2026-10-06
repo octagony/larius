@@ -8,7 +8,7 @@ import { toast } from '@/components/ui/toast';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from './ui/table';
 import { IScanResult } from '@/lib/interfaces/components/IFileUploader';
 import { setPoolingMessage } from '@/lib/state/features/poolingMessageSlice';
-import { StatBlock } from '@/components/layout/StatBlock';
+import { StatBlock } from '@/components/StatBlock';
 import { Card } from '@/components/ui/card';
 import { CircleCheck, CircleX, TriangleAlert, Upload } from 'lucide-react';
 import {
@@ -137,7 +137,7 @@ export function FileUploader() {
     <div className="max-w-2xl mx-auto p-4 space-y-4">
       <Card
         {...getRootProps()}
-        className={`relative flex flex-col items-center justify-center p-10 border-2 border-dashed transition-all cursor-pointer
+        className={`relative flex flex-col items-center justify-center p-10 transition-all cursor-pointer
           ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-muted-foreground/50'}
           ${isScanning ? 'opacity-50 cursor-not-allowed' : ''}
         `}

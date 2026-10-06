@@ -7,6 +7,7 @@ import Header from '@/components/layout/Header';
 import ReduxProvider from '@/lib/state/providers/ReduxProvider';
 import Spinner from '@/components/Spinner';
 import { Toaster } from '@/components/ui/toast';
+import { Footer } from '@/components/layout/Footer';
 
 const robotoHeading = Roboto({
   subsets: ['latin'],
@@ -34,13 +35,14 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       )}
       suppressHydrationWarning
     >
-      <body className="mx-auto min-h-full flex flex-col">
+      <body className="mx-auto min-h-full flex flex-col bg-gradient-bg ">
         <ReduxProvider>
           <ThemeProvider>
             <Header />
-            <main className="h-dvh w-dvw">{children}</main>
+            {children}
             <Spinner />
             <Toaster />
+            <Footer />
           </ThemeProvider>
         </ReduxProvider>
       </body>
