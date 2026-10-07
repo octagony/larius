@@ -1,4 +1,4 @@
-import { IStatBlock } from '@/lib/interfaces/components/IStatBlock';
+import { IStatBlock } from '@/lib/interfaces/components/IStatBlock.interface';
 
 export function StatBlock({ label, value, color }: IStatBlock) {
   return (

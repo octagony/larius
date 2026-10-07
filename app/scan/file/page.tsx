@@ -13,7 +13,7 @@ import {
   SUSPICIOUS_FILE_TITLE,
 } from '@/lib/constants';
 import { setToast } from '@/lib/helpers';
-import { IScanResult } from '@/lib/interfaces/hooks/IUsePoolAnalitycs.interface';
+import { IEngineResult, IScanResult } from '@/lib/interfaces/components/IFileUploader.interface';
 import { hideLoader, showLoader } from '@/lib/state/features/loaderSlice';
 import { useAppDispatch } from '@/lib/state/hooks';
 import { CircleCheck, CircleX, TriangleAlert } from 'lucide-react';
@@ -96,30 +96,32 @@ export default function FileScanPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {Object.entries(result.results).map(([engine, data]) => (
-                      <TableRow key={engine}>
-                        <TableHead>{engine}</TableHead>
-                        <TableHead
-                          className={`${data.category === MALICIOS_FILE_CATEGORY ? 'text-red-600' : data.category === SUSPICIOUS_FILE_CATEGORY ? 'text-yellow-600' : 'text-green-600'}`}
-                        >
-                          <span className="flex items-center gap-2">
-                            {data.category === MALICIOS_FILE_CATEGORY ? (
-                              <>
-                                <CircleX size={16} /> {MALICIOUS_FILE_TITLE}
-                              </>
-                            ) : data.category === SUSPICIOUS_FILE_CATEGORY ? (
-                              <>
-                                <TriangleAlert size={16} /> {SUSPICIOUS_FILE_TITLE}
-                              </>
-                            ) : (
-                              <>
-                                <CircleCheck size={16} /> {SAFE_FILE_TITLE}
-                              </>
-                            )}
-                          </span>
-                        </TableHead>
-                      </TableRow>
-                    ))}
+                    {Object.entries(result.results).map(
+                      ([engine, data]: [string, IEngineResult]) => (
+                        <TableRow key={engine}>
+                          <TableHead>{engine}</TableHead>
+                          <TableHead
+                            className={`${data.category === MALICIOS_FILE_CATEGORY ? 'text-red-600' : data.category === SUSPICIOUS_FILE_CATEGORY ? 'text-yellow-600' : 'text-green-600'}`}
+                          >
+                            <span className="flex items-center gap-2">
+                              {data.category === MALICIOS_FILE_CATEGORY ? (
+                                <>
+                                  <CircleX size={16} /> {MALICIOUS_FILE_TITLE}
+                                </>
+                              ) : data.category === SUSPICIOUS_FILE_CATEGORY ? (
+                                <>
+                                  <TriangleAlert size={16} /> {SUSPICIOUS_FILE_TITLE}
+                                </>
+                              ) : (
+                                <>
+                                  <CircleCheck size={16} /> {SAFE_FILE_TITLE}
+                                </>
+                              )}
+                            </span>
+                          </TableHead>
+                        </TableRow>
+                      )
+                    )}
                   </TableBody>
                 </Table>
               </div>

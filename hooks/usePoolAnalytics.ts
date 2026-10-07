@@ -1,6 +1,6 @@
 import { useAppDispatch } from '@/lib/state/hooks';
 import { setPoolingMessage } from '@/lib/state/features/poolingMessageSlice';
-import { IScanResult } from '@/lib/interfaces/hooks/IUsePoolAnalitycs.interface';
+import { IScanResult } from '@/lib/interfaces/components/IFileUploader.interface';
 
 export function usePoolAnalytics() {
   const dispatch = useAppDispatch();
@@ -9,8 +9,9 @@ export function usePoolAnalytics() {
     analysisId: string,
     scanName: string
   ): Promise<IScanResult> => {
-    const maxAttempts = 20;
+    const maxAttempts = 10;
     let attempts = 0;
+    let lastData: IScanResult | null = null;
     const interval = 2000;
     const shortName = scanName.length > 25 ? `${scanName.slice(0, 12)}...` : scanName;
 
@@ -27,6 +28,8 @@ export function usePoolAnalytics() {
           throw new Error(data.error || 'Error getting the status');
         }
 
+        lastData = data as IScanResult;
+
         if (data.status === 'completed') {
           dispatch(setPoolingMessage(''));
           return data as IScanResult;
@@ -37,7 +40,11 @@ export function usePoolAnalytics() {
         }
 
         attempts++;
+
         if (attempts >= maxAttempts) {
+          if (lastData) {
+            return lastData;
+          }
           throw new Error('The waiting time for analysis has been exceeded. Try again later.');
         }
 

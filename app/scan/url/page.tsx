@@ -120,22 +120,23 @@ export default function UrlScanPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {Object.entries(result.results).map(([engine, data]) => (
-                        <TableRow key={engine}>
-                          <TableHead className="font-medium">{engine}</TableHead>
-                          <TableHead
-                            className={`${
-                              data.result === 'malicious'
-                                ? 'text-red-600'
-                                : data.result === 'clean'
-                                  ? 'text-green-600'
-                                  : 'text-gray-300'
-                            }`}
-                          >
-                            {data.result}
-                          </TableHead>
-                        </TableRow>
-                      ))}
+                      {Object.entries(result.results).map(([engine, data]) => {
+                        const textColor =
+                          data.category === 'malicious'
+                            ? 'text-red-600'
+                            : data.category === 'suspicious'
+                              ? 'text-yellow-600'
+                              : 'text-green-600';
+
+                        return (
+                          <TableRow key={engine}>
+                            <TableHead className="font-medium">{engine}</TableHead>
+                            <TableHead className={textColor}>
+                              {data.result || data.category}
+                            </TableHead>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>

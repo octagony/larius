@@ -1,6 +1,6 @@
 'use client';
 
-import { ILoaderState } from '@/lib/interfaces/state/ILoaderState';
+import { ILoaderState } from '@/lib/interfaces/state/ILoaderState.interface';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 

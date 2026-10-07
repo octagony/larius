@@ -1,4 +1,4 @@
-import { IPoolingMessageState } from '@/lib/interfaces/state/IPoolingMessageState';
+import { IPoolingMessageState } from '@/lib/interfaces/state/IPoolingMessageState.interface';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
