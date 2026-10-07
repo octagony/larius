@@ -47,7 +47,7 @@ export async function POST(
 
     if (!vtResponse.ok) {
       const errorText = await vtResponse.text();
-      let errorMessage = 'Ошибка со стороны VirusTotal';
+      let errorMessage = 'Error on the part of VirusTotal';
 
       try {
         const errorData = JSON.parse(errorText);
@@ -62,9 +62,9 @@ export async function POST(
     const data = (await vtResponse.json()) as IFetchAnalysisResponse;
     return NextResponse.json<IScanSuccessResponse>({ analysisId: data.data.id });
   } catch (error: any) {
-    console.error('Ошибка проверки URL в VT:', error);
+    console.error('Error checking the URL:', error);
     return NextResponse.json<IErrorResponse>(
-      { error: error.message || 'Внутренняя ошибка сервера' },
+      { error: error.message || 'Internal server error' },
       { status: 500 }
     );
   }

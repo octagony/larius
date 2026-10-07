@@ -58,7 +58,7 @@ export default function FileScanPage() {
         <div className="px-2 py-4">
           <FileUploader onFileSelect={handleScanFile} />
         </div>
-        <Terms />
+        {!result && <Terms />}
         {result && result.stats && (
           <div className="p-6 dark:bg-black bg-white border rounded-lg shadow-sm space-y-4">
             <h2 className="text-xl font-bold text-zinc-950 dark:text-white">Scan Report</h2>

@@ -8,15 +8,17 @@ export function usePoolAnalytics() {
 
   const pollAnalysisResults = async (
     analysisId: string,
-    contextName: string
+    scanName: string
   ): Promise<IScanResult> => {
     const maxAttempts = 20;
     let attempts = 0;
     let interval = 2000;
+    const shortName = scanName.length > 25 ? `${scanName.slice(0, 12)}...` : scanName;
 
     while (attempts < maxAttempts) {
       const timeLeft = (((maxAttempts - attempts) * interval) / 1000).toFixed(0);
-      dispatch(setPoolingMessage(`Analysis ${contextName}... (remaining ~${timeLeft} sec)`));
+
+      dispatch(setPoolingMessage(`Analysis ${shortName}... (remaining ~${timeLeft} sec)`));
 
       try {
         const res = await fetch(`/api/status?analysisId=${analysisId}`);
@@ -42,7 +44,6 @@ export function usePoolAnalytics() {
 
         await new Promise((resolve) => setTimeout(resolve, Math.min(interval * 1.5, 8000)));
       } catch (err: any) {
-        setToast('error', err.message, 'high');
         dispatch(setPoolingMessage(''));
         throw err;
       }

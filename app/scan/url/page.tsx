@@ -77,7 +77,7 @@ export default function UrlScanPage() {
             </Button>
           </TextInput>
         </div>
-        <Terms />
+        {!result && <Terms />}
         {result && result.stats && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
