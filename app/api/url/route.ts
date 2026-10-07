@@ -61,10 +61,10 @@ export async function POST(
 
     const data = (await vtResponse.json()) as IFetchAnalysisResponse;
     return NextResponse.json<IScanSuccessResponse>({ analysisId: data.data.id });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error checking the URL:', error);
     return NextResponse.json<IErrorResponse>(
-      { error: error.message || 'Internal server error' },
+      { error: (error as Error).message || 'Internal server error' },
       { status: 500 }
     );
   }

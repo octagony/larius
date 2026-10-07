@@ -1,7 +1,6 @@
 import { Logo } from '@/components/layout/Logo';
 import { GithubLink } from './GithubLink';
 import Link from 'next/link';
-import { Link2 } from 'lucide-react';
 
 export function Footer() {
   return (

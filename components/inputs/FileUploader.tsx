@@ -8,7 +8,7 @@ import { MAX_FILE_SIZE } from '@/lib/constants';
 import { setToast } from '@/lib/helpers';
 import { useMemo } from 'react';
 
-export function FileUploader({ onFileSelect, children }: IFileUploaderProps) {
+export function FileUploader({ onFileSelect }: IFileUploaderProps) {
   const onDrop = useMemo(
     () => (acceptedFiles: File[]) => {
       if (acceptedFiles.length === 0) {

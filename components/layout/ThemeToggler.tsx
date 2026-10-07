@@ -1,6 +1,6 @@
 import { useTheme } from 'next-themes';
 import { Moon, Sun } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function ThemeToggler() {
   const { theme, setTheme } = useTheme();

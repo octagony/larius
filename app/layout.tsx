@@ -8,7 +8,6 @@ import ReduxProvider from '@/lib/state/providers/ReduxProvider';
 import Spinner from '@/components/Spinner';
 import { Toaster } from '@/components/ui/toast';
 import { Footer } from '@/components/layout/Footer';
-import { redirect } from 'next/navigation';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 const robotoHeading = Roboto({

@@ -9,7 +9,6 @@ import { usePoolAnalytics } from '@/hooks/usePoolAnalytics';
 import { processUrl, setToast } from '@/lib/helpers';
 import { IScanResult } from '@/lib/interfaces/components/IFileUploader.interface';
 import { hideLoader, showLoader } from '@/lib/state/features/loaderSlice';
-import { setPoolingMessage } from '@/lib/state/features/poolingMessageSlice';
 import { cn } from 'cn';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -48,8 +47,8 @@ export default function UrlScanPage() {
 
       const result = await pollAnalysisResults(data.analysisId, urlForScan);
       setResult(result);
-    } catch (err: any) {
-      setToast('error', err.message, 'high');
+    } catch (err: unknown) {
+      setToast('error', (err as Error).message, 'high');
     } finally {
       dispatch(hideLoader());
     }
@@ -58,7 +57,7 @@ export default function UrlScanPage() {
   return (
     <div className="h-full w-full flex flex-col flex-1 max-w-3xl mx-auto">
       <div className="pt-20 lg:pt-28 mb-4 mt-4 text-2xl font-extrabold tracking-tight leading-none md:text-3xl lg:text-4xl dark:text-white text-center">
-        <h2>Scan URL's for viruses and suspicious items</h2>
+        <h2>Scan URL for viruses and suspicious items</h2>
         <div className="px-2 py-4 max-w-3xl">
           <TextInput model={text} setModel={setText}>
             <Button
@@ -121,7 +120,7 @@ export default function UrlScanPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {Object.entries(result.results).map(([engine, data]: [string, any]) => (
+                      {Object.entries(result.results).map(([engine, data]) => (
                         <TableRow key={engine}>
                           <TableHead className="font-medium">{engine}</TableHead>
                           <TableHead

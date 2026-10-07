@@ -44,8 +44,8 @@ export default function FileScanPage() {
 
       const result = await pollAnalysisResults(uploadData.analysisId, file.name);
       setResult(result);
-    } catch (err: any) {
-      setToast('error', err.message, 'high');
+    } catch (err: unknown) {
+      setToast('error', (err as Error).message, 'high');
     } finally {
       dispatch(hideLoader());
     }
@@ -96,7 +96,7 @@ export default function FileScanPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {Object.entries(result.results).map(([engine, data]: [string, any]) => (
+                    {Object.entries(result.results).map(([engine, data]) => (
                       <TableRow key={engine}>
                         <TableHead>{engine}</TableHead>
                         <TableHead

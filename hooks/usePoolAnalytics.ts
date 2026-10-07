@@ -1,6 +1,5 @@
 import { useAppDispatch } from '@/lib/state/hooks';
 import { setPoolingMessage } from '@/lib/state/features/poolingMessageSlice';
-import { setToast } from '@/lib/helpers';
 import { IScanResult } from '@/lib/interfaces/hooks/IUsePoolAnalitycs.interface';
 
 export function usePoolAnalytics() {
@@ -12,7 +11,7 @@ export function usePoolAnalytics() {
   ): Promise<IScanResult> => {
     const maxAttempts = 20;
     let attempts = 0;
-    let interval = 2000;
+    const interval = 2000;
     const shortName = scanName.length > 25 ? `${scanName.slice(0, 12)}...` : scanName;
 
     while (attempts < maxAttempts) {
@@ -43,7 +42,7 @@ export function usePoolAnalytics() {
         }
 
         await new Promise((resolve) => setTimeout(resolve, Math.min(interval * 1.5, 8000)));
-      } catch (err: any) {
+      } catch (err: unknown) {
         dispatch(setPoolingMessage(''));
         throw err;
       }

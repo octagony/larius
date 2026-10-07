@@ -44,8 +44,11 @@ export async function POST(
 
     const data = (await vtResponse.json()) as IFetchAnalysisResponse;
     return NextResponse.json<IScanSuccessResponse>({ analysisId: data.data.id });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error uploading to VirusTotal:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: (error as Error).message || 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

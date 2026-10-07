@@ -1,16 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Logo } from '@/components/layout/Logo';
 import { Navigation } from './Navigation';
 import { ThemeToggler } from './ThemeToggler';
+import { useIsMounted } from '@/hooks/useIsMounted';
 
 export default function Header() {
-  const [mounted, setMounted] = useState(false);
+  const isMounted = useIsMounted();
 
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) {
+  if (!isMounted) {
     return <div className="h-9 w-9" />;
   }
 

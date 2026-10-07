@@ -36,8 +36,11 @@ export async function GET(
       stats: data.data.attributes.stats,
       results: data.data.attributes.results,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error checking status:', error);
-    return NextResponse.json<IErrorResponse>({ error: error.message }, { status: 500 });
+    return NextResponse.json<IErrorResponse>(
+      { error: (error as Error).message || 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
