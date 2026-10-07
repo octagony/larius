@@ -1,17 +1,27 @@
 import { MAX_FILE_SIZE } from '@/lib/constants';
+import { IScanSuccessResponse } from '@/lib/interfaces/api/IAnalysisResponse.interface';
+import {
+  IErrorResponse,
+  IFetchAnalysisResponse,
+} from '@/lib/interfaces/api/IFetchResponse.interface';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest
+): Promise<NextResponse<IScanSuccessResponse | IErrorResponse>> {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
 
     if (!file) {
-      return NextResponse.json({ error: 'File is not provided' }, { status: 400 });
+      return NextResponse.json<IErrorResponse>({ error: 'File is not provided' }, { status: 400 });
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: 'File exceeds the 32 MB limit' }, { status: 400 });
+      return NextResponse.json<IErrorResponse>(
+        { error: 'File exceeds the 32 MB limit' },
+        { status: 400 }
+      );
     }
 
     const vtFormData = new FormData();
@@ -32,9 +42,8 @@ export async function POST(request: NextRequest) {
       throw new Error(errorData.error?.message || 'Error uploading to VirusTotal');
     }
 
-    const data = await vtResponse.json();
-
-    return NextResponse.json({ analysisId: data.data.id });
+    const data = (await vtResponse.json()) as IFetchAnalysisResponse;
+    return NextResponse.json<IScanSuccessResponse>({ analysisId: data.data.id });
   } catch (error: any) {
     console.error('Error uploading to VirusTotal:', error);
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });

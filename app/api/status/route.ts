@@ -1,11 +1,21 @@
+import { IErrorResponse } from '@/lib/interfaces/api/IFetchResponse.interface';
+import {
+  IAnalysisResponse,
+  IAnalysisSuccessResponse,
+} from '@/lib/interfaces/api/IStatusResponse.interface';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest
+): Promise<NextResponse<IAnalysisSuccessResponse | IErrorResponse>> {
   const { searchParams } = new URL(request.url);
   const analysisId = searchParams.get('analysisId');
 
   if (!analysisId) {
-    return NextResponse.json({ error: 'AnalysisId not specified' }, { status: 400 });
+    return NextResponse.json<IErrorResponse>(
+      { error: 'AnalysisId not specified' },
+      { status: 400 }
+    );
   }
 
   try {
@@ -19,15 +29,15 @@ export async function GET(request: NextRequest) {
       throw new Error("Couldn't get the analysis status");
     }
 
-    const data = await vtResponse.json();
+    const data = (await vtResponse.json()) as IAnalysisResponse;
 
-    return NextResponse.json({
+    return NextResponse.json<IAnalysisSuccessResponse>({
       status: data.data.attributes.status,
       stats: data.data.attributes.stats,
       results: data.data.attributes.results,
     });
   } catch (error: any) {
     console.error('Error checking status:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json<IErrorResponse>({ error: error.message }, { status: 500 });
   }
 }

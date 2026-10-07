@@ -1,6 +1,13 @@
+import { IScanSuccessResponse } from '@/lib/interfaces/api/IAnalysisResponse.interface';
+import {
+  IErrorResponse,
+  IFetchAnalysisResponse,
+} from '@/lib/interfaces/api/IFetchResponse.interface';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest
+): Promise<NextResponse<IScanSuccessResponse | IErrorResponse>> {
   try {
     let urlToScan = '';
 
@@ -10,15 +17,15 @@ export async function POST(request: NextRequest) {
     } catch {
       try {
         const formData = await request.formData();
-        urlToScan = formData.get('url') as string;
+        urlToScan = String(formData.get('url'));
       } catch {
-        return NextResponse.json({ error: 'Неверный формат данных запроса' }, { status: 400 });
+        return NextResponse.json({ error: 'Invalid request data format' }, { status: 400 });
       }
     }
 
     if (!urlToScan || typeof urlToScan !== 'string') {
-      return NextResponse.json(
-        { error: 'URL не предоставлен или имеет неверный формат' },
+      return NextResponse.json<IErrorResponse>(
+        { error: 'URL is not provided or has an incorrect format.' },
         { status: 400 }
       );
     }
@@ -26,7 +33,7 @@ export async function POST(request: NextRequest) {
     try {
       new URL(`http://${urlToScan}`);
     } catch {
-      return NextResponse.json({ error: 'Некорректный URL' }, { status: 400 });
+      return NextResponse.json<IErrorResponse>({ error: 'Invalid URL' }, { status: 400 });
     }
 
     const vtResponse = await fetch('https://www.virustotal.com/api/v3/urls', {
@@ -52,11 +59,11 @@ export async function POST(request: NextRequest) {
       throw new Error(errorMessage);
     }
 
-    const data = await vtResponse.json();
-    return NextResponse.json({ analysisId: data.data.id });
+    const data = (await vtResponse.json()) as IFetchAnalysisResponse;
+    return NextResponse.json<IScanSuccessResponse>({ analysisId: data.data.id });
   } catch (error: any) {
     console.error('Ошибка проверки URL в VT:', error);
-    return NextResponse.json(
+    return NextResponse.json<IErrorResponse>(
       { error: error.message || 'Внутренняя ошибка сервера' },
       { status: 500 }
     );
